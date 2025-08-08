@@ -14,7 +14,7 @@ export default {
     }
 
     const githubUsername = "tepo18"; // نام کاربری گیت‌هاب
-    const repoName = "vpn-vip10"; // نام ریپو
+    const repoName = "reza-shah130"; // نام ریپو
     const branch = "main"; // شاخه
 
     const githubRawUrl = `https://raw.githubusercontent.com/${githubUsername}/${repoName}/${branch}/${fileName}`;
