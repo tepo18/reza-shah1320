@@ -1,5 +1,10 @@
 # sab-vip15606
-# - # لیست ساب لینک‌ها - fregment.json
+https://raw.githubusercontent.com/tepo18/reza-shsh1320/main/config.txt
+https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config2.txt
+https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config3.txt
+# - # لیست ساب لینک‌ها - 
+https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config1.txt
+https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config4.txt
 - [فایل fregment1.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment1.json)
 - [فایل fregment2.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment2.json)
 - [فایل fregment3.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment3.json)
