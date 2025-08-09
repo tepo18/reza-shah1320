@@ -2,13 +2,13 @@
 
 (https://raw.githubusercontent.com/tepo18/reza-shsh1320/main/config.txt)[فایل config.txt]-
 
-(https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config2.txt)- [فایل config1.txt]
+(https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config2.txt)- [فایل config1.txt]
 
-(https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config3.txt)
+(https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config3.txt)
 # - # لیست ساب لینک‌ها - 
-(https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config1.txt)
+(https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config1.txt)
 
-(https://raw.githubusercontent.com/tepo18/reza-shah1320/blob/main/config4.txt)
+(https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config4.txt)
 
 - [فایل fregment1.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment1.json)
 - [فایل fregment2.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment2.json)
