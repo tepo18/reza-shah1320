@@ -11,7 +11,7 @@ const subLinks = [
   'https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config.txt',
 ];
 
-export default {
+    export default {
   async fetch(request) {
     let url = new URL(request.url);
     let pathSegments = url.pathname.split('/').filter(segment => segment !== '');
