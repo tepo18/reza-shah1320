@@ -21,9 +21,14 @@ const LOCK_TIME_MS = 30 * 1000; // 30 ثانیه قفل
 // اگر نداری باید در تنظیمات Worker اضافه کنی و نامشونو جایگزین کنی
 
 export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    const cookies = parseCookies(request);
+      async fetch(request) {
+        let url = new URL(request.url);
+        let pathSegments = url.pathname.split('/').filter(segment => segment !== '');
+        let realhostname = pathSegments[0] || '';
+        let realpathname = pathSegments[1] || '';
+    
+        if (url.pathname === '/') {
+          return new Response(`
 
     // مقدار رمز فعلی را از KV می‌گیریم، اگر نیست پیش‌فرض 12345678
     let savedPassword = await env.PASSWORD_KV.get('password');
