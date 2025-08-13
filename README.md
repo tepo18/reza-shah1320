@@ -1,5 +1,5 @@
 # sab-vip15606
-
+https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment60.json
 (https://raw.githubusercontent.com/tepo18/reza-shsh1320/main/config.txt)[فایل config.txt]-
 
 (https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config2.txt)- [فایل config1.txt]
@@ -10,6 +10,15 @@
 
 (https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config4.txt)
 https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config323.txt
+
+
+- [فایل fregment60.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment60.json)
+- [فایل fregment15.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment15.json)
+- [فایل fregment13.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment13.json)
+- [فایل fregment14.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment14.json)
+- [فایل fregment15.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment15.json)
+- # لیست ساب لینک‌ها - clash.yaml
+- [فایل 
 - [فایل fregment1.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment1.json)
 - [فایل fregment2.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment2.json)
 - [فایل fregment3.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment3.json)
