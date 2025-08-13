@@ -9,7 +9,7 @@
 (https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config1.txt)
 
 (https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config4.txt)
-
+https://raw.githubusercontent.com/tepo18/reza-shah1320/main/config323.txt
 - [فایل fregment1.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment1.json)
 - [فایل fregment2.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment2.json)
 - [فایل fregment3.json](https://raw.githubusercontent.com/tepo18/reza-shah1320/main/fregment3.json)
