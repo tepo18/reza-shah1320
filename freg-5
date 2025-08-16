@@ -1,0 +1,1002 @@
+[
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  },
+  {
+    "remarks": "🐣82@oneclickvpnkeys",
+    "log": {
+      "loglevel": "warning"
+    },
+    "dns": {},
+    "inbounds": [],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.visa.com.sg",
+              "port": 2087,
+              "users": [
+                {
+                  "id": "90c7ad5e-cd15-4314-b39b-aeabd397d592",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "sockopt": {
+            "dialerProxy": "fragment"
+          },
+          "tlsSettings": {
+            "serverName": "vl.hongkong6.qzz.io",
+            "fingerprint": "random",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/?ed=2560",
+            "headers": {
+              "Host": "vl.hongkong6.qzz.io"
+            }
+          }
+        }
+      }
+    ],
+    "routing": {}
+  }
+]
