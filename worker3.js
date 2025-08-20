@@ -3,7 +3,7 @@ const PASSWORD = "15601560"; // 馃攽 乇賲夭 賵乇賵丿 倬賳賱
 
 // ======= 賲賳丕亘毓 卮禺氐蹖 卮賲丕 =======
 const STATIC_SOURCES = ["
-    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/vip30.json",
+  "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/vip30.json",
   "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/vip30.txt",
   "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/vip30.yaml",
   "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/vip20.json",
