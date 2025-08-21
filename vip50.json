@@ -1,0 +1,334 @@
+{
+  "proxies": [
+    {
+      "name": "🇫🇮𝐣𝐨𝐢𝐍-@𝐅𝐑𝐄𝐄𝐕𝟐𝐑𝐍𝐆",
+      "type": "vless",
+      "server": "65.108.231.185",
+      "port": 443,
+      "uuid": "440766d1-858f-4719-84f5-c2de6f6227ba",
+      "network": "tcp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇫🇷®️France©️Paris🅿️ping:27.81ms",
+      "type": "vless",
+      "server": "185.231.205.239",
+      "port": 8880,
+      "uuid": "df0680ca-e43c-498d-ed86-8e196eedd012",
+      "network": "grpc",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇺🇸®️United States©️Secaucus🅿️ping:88.1ms",
+      "type": "vless",
+      "server": "45.82.251.93",
+      "port": 8880,
+      "uuid": "e4824193-4f54-453b-d037-88368e85ef0e",
+      "network": "grpc",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇩🇪®️Germany©️Limburg an der Lahn🅿️ping:7.69ms",
+      "type": "vless",
+      "server": "162.19.250.162",
+      "port": 24209,
+      "uuid": "decb4fce-bd8a-4d8b-a81f-2e393ee9ee02",
+      "network": "tcp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇫🇷®️France©️Paris🅿️ping:18.34ms",
+      "type": "vless",
+      "server": "185.242.87.140",
+      "port": 443,
+      "uuid": "3a08182c-ef44-4137-afac-12d2f58994e6",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇺🇸®️United States©️Reston🅿️ping:93.14ms",
+      "type": "vless",
+      "server": "15.204.236.64",
+      "port": 24820,
+      "uuid": "8dbb26f8-8832-46bc-bc0c-a2f17d8d200f",
+      "network": "tcp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇨🇦®️Canada©️Toronto🅿️ping:6.64ms",
+      "type": "vless",
+      "server": "104.19.144.33",
+      "port": 443,
+      "uuid": "e999db7a-1b17-4da6-bc37-c9fa24af2e93",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇱🇰®️Sri Lanka©️Colombo🅿️ping:6.27ms",
+      "type": "vless",
+      "server": "87.120.205.76",
+      "port": 1002,
+      "uuid": "10e72fbe-78c9-483b-9ddd-26b33ecd02f6",
+      "network": "xhttp",
+      "tls": false,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇺🇸®️United States©️Secaucus🅿️ping:90.23ms",
+      "type": "vless",
+      "server": "45.82.251.58",
+      "port": 8880,
+      "uuid": "e4824193-4f54-453b-d037-88368e85ef0e",
+      "network": "grpc",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇺🇸®️United States©️Secaucus🅿️ping:89.05ms",
+      "type": "vless",
+      "server": "45.82.251.93",
+      "port": 8880,
+      "uuid": "e4824193-4f54-453b-d037-88368e85ef0e",
+      "network": "grpc",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇫🇷®️France©️Paris🅿️ping:18.43ms",
+      "type": "vless",
+      "server": "2.56.126.45",
+      "port": 8443,
+      "uuid": "a5e0c391-accd-45a7-8bb9-99ffb9b09b16",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇨🇦®️Canada©️Toronto🅿️ping:6.27ms",
+      "type": "vless",
+      "server": "104.19.144.33",
+      "port": 8443,
+      "uuid": "e999db7a-1b17-4da6-bc37-c9fa24af2e93",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇩🇪®️Germany©️Frankfurt am Main (Innenstadt I)🅿️ping:14.88ms",
+      "type": "vless",
+      "server": "212.95.34.19",
+      "port": 443,
+      "uuid": "784646e5-8e84-4672-8670-efc9cafcd2cc",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇦🇹®️Austria©️Vienna🅿️ping:13.73ms",
+      "type": "vless",
+      "server": "5.181.21.152",
+      "port": 24170,
+      "uuid": "6a8ee307-a1fb-4801-92e2-86253ecdd88d",
+      "network": "tcp",
+      "tls": false,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇩🇪®️Germany©️Nuremberg🅿️ping:14.15ms",
+      "type": "vless",
+      "server": "91.99.223.68",
+      "port": 443,
+      "uuid": "0f7e89d6-9f35-4e94-ba4b-509a724dc177",
+      "network": "xhttp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇫🇷®️France©️Paris🅿️ping:20.74ms",
+      "type": "vless",
+      "server": "185.231.205.248",
+      "port": 8880,
+      "uuid": "df0680ca-e43c-498d-ed86-8e196eedd012",
+      "network": "grpc",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇫🇷®️France©️Paris🅿️ping:18.66ms",
+      "type": "vless",
+      "server": "94.131.9.159",
+      "port": 443,
+      "uuid": "a5e0c391-accd-45a7-8bb9-99ffb9b09b16",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇨🇦®️Canada©️Toronto🅿️ping:6.84ms",
+      "type": "vless",
+      "server": "fierce-data.seotoolsforyou.co.uk",
+      "port": 80,
+      "uuid": "c313c27c-97ff-45ed-ab5c-64641af5debc",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇨🇦®️Canada©️Toronto🅿️ping:6.43ms",
+      "type": "vless",
+      "server": "104.19.144.33",
+      "port": 8443,
+      "uuid": "e999db7a-1b17-4da6-bc37-c9fa24af2e93",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "ARISTA💥",
+      "type": "vless",
+      "server": "ru.sfasti.ru",
+      "port": 443,
+      "uuid": "6fae85ca-395a-4f27-9eb2-75123befc475",
+      "network": "tcp",
+      "tls": false,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇱🇰®️Sri Lanka©️Colombo🅿️ping:6.66ms",
+      "type": "vless",
+      "server": "87.120.205.76",
+      "port": 1002,
+      "uuid": "10e72fbe-78c9-483b-9ddd-26b33ecd02f6",
+      "network": "xhttp",
+      "tls": false,
+      "udp": true
+    },
+    {
+      "name": "🇩🇪 Germany 5",
+      "type": "vless",
+      "server": "all85-vip.f-sub.com",
+      "port": 2434,
+      "uuid": "5f4896c2-ecce-41f5-97f2-fd1c5777e300",
+      "network": "tcp",
+      "tls": false,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇨🇦®️Canada©️Toronto🅿️ping:6.27ms",
+      "type": "vless",
+      "server": "104.19.144.33",
+      "port": 8443,
+      "uuid": "e999db7a-1b17-4da6-bc37-c9fa24af2e93",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇦🇪®️United Arab Emirates©️Dubai (Nadd ash Shibā)🅿️ping:10.89ms",
+      "type": "vless",
+      "server": "sss19711.tas-bazi.com",
+      "port": 443,
+      "uuid": "43fbd4b6-0e35-4b6f-9ed2-8fe95be28bf5",
+      "network": "xhttp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "🇩🇪 Germany 3",
+      "type": "vless",
+      "server": "all85-vip.f-sub.com",
+      "port": 1517,
+      "uuid": "5f4896c2-ecce-41f5-97f2-fd1c5777e300",
+      "network": "tcp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "Channel : @CaptalVpn 🏴🏳",
+      "type": "vless",
+      "server": "www.speedtest.net.cdn.cloudflare.net",
+      "port": 8080,
+      "uuid": "813d7c7e-d2ea-460f-9bf7-e6fa6a073b67",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "@varn_Net",
+      "type": "vless",
+      "server": "www.speedtest.net.cdn.cloudflare.net",
+      "port": 80,
+      "uuid": "6b3b071f-096b-4e4c-8d70-0e0b53f27434",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "Config🇫🇮@Do_itforyou",
+      "type": "vless",
+      "server": "65.109.145.54",
+      "port": 443,
+      "uuid": "8f82acbe-f328-471a-8000-fbea349e6ce0",
+      "network": "tcp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇫🇷®️France©️Paris🅿️ping:18.33ms",
+      "type": "vless",
+      "server": "185.242.87.140",
+      "port": 443,
+      "uuid": "3a08182c-ef44-4137-afac-12d2f58994e6",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "✅@v2ray_configs_pools",
+      "type": "vless",
+      "server": "jealous-competition.seotoolsforyou.co.uk",
+      "port": 80,
+      "uuid": "7094df26-af60-41c4-afac-857060d1bab0",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "👉🆔@v2ray_configs_pool📡🇨🇦®️Canada©️Toronto🅿️ping:6.71ms",
+      "type": "vless",
+      "server": "OBEDiENT-detAiL.SEOTOOlSFOrYou.co.uk",
+      "port": 80,
+      "uuid": "1dd49fb8-6570-4a2a-a236-f410b63159cf",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "🇺🇸 USA",
+      "type": "vless",
+      "server": "em-5.web-manage.com.tr",
+      "port": 3789,
+      "uuid": "5f4896c2-ecce-41f5-97f2-fd1c5777e300",
+      "network": "tcp",
+      "tls": true,
+      "udp": true
+    },
+    {
+      "name": "Telegram:@config_proxy 🔥",
+      "type": "vless",
+      "server": "charming-process.seotoolsforyou.co.uk",
+      "port": 80,
+      "uuid": "43791e7f-8e02-4189-9533-4f842bcacd79",
+      "network": "ws",
+      "tls": true,
+      "udp": true
+    }
+  ]
+}
