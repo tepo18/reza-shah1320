@@ -1,0 +1,82 @@
+proxies:
+- name: vlesse4824193-4f54-453b-d037-88368e85ef0e
+  type: vless
+  server: 45.82.251.114
+  port: 443
+  uuid: e4824193-4f54-453b-d037-88368e85ef0e
+  tls: true
+  network: tcp
+  udp: true
+  encryption: none
+- name: vlessdf0680ca-e43c-498d-ed86-8e196eedd012
+  type: vless
+  server: 94.131.9.172
+  port: 443
+  uuid: df0680ca-e43c-498d-ed86-8e196eedd012
+  tls: true
+  network: tcp
+  udp: true
+  encryption: none
+- name: vlesse4824193-4f54-453b-d037-88368e85ef0e1
+  type: vless
+  server: 45.82.251.133
+  port: 443
+  uuid: e4824193-4f54-453b-d037-88368e85ef0e
+  tls: true
+  network: tcp
+  udp: true
+  encryption: none
+- name: vless01d68a9b-be48-4c7b-b4f9-71b29c4cfaca
+  type: vless
+  server: 95.217.206.161
+  port: 443
+  uuid: 01d68a9b-be48-4c7b-b4f9-71b29c4cfaca
+  tls: true
+  network: tcp
+  udp: true
+  encryption: none
+proxy-groups:
+- name: Proxy-Select
+  type: select
+  proxies:
+  - Auto-Select
+  - DIRECT
+  - vlesse4824193-4f54-453b-d037-88368e85ef0e
+  - vlessdf0680ca-e43c-498d-ed86-8e196eedd012
+  - vlesse4824193-4f54-453b-d037-88368e85ef0e1
+  - vless01d68a9b-be48-4c7b-b4f9-71b29c4cfaca
+- name: Auto-Select
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+  proxies:
+  - vlesse4824193-4f54-453b-d037-88368e85ef0e
+  - vlessdf0680ca-e43c-498d-ed86-8e196eedd012
+  - vlesse4824193-4f54-453b-d037-88368e85ef0e1
+  - vless01d68a9b-be48-4c7b-b4f9-71b29c4cfaca
+  interval: 300
+  tolerance: 5000
+- name: Direct
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy-Select
+  - Auto-Select
+- name: Reject
+  type: select
+  proxies:
+  - REJECT
+  - DIRECT
+- name: Final
+  type: select
+  proxies:
+  - Proxy-Select
+  - Direct
+  - Auto-Select
+  - vlesse4824193-4f54-453b-d037-88368e85ef0e
+  - vlessdf0680ca-e43c-498d-ed86-8e196eedd012
+  - vlesse4824193-4f54-453b-d037-88368e85ef0e1
+  - vless01d68a9b-be48-4c7b-b4f9-71b29c4cfaca
+rules:
+- DOMAIN-SUFFIX,localhost,Direct
+- IP-CIDR,192.168.0.0/16,Direct,no-resolve
+- MATCH,Final
