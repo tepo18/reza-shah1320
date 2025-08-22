@@ -1,0 +1,23 @@
+#!/bin/bash
+
+indir="/sdcard/Download/Akbar98"
+infile="$indir/input10.txt"
+
+if [ ! -f "$infile" ]; then
+  echo "Input file $infile not found. Create it and put your links inside."
+  exit 1
+fi
+
+read -p "Enter output file name (e.g., merge.txt): " outname
+outfile="$indir/$outname"
+
+> "$outfile"
+
+while IFS= read -r url; do
+  [ -z "$url" ] && continue
+  echo "Fetching: $url"
+  curl -sL "$url" >> "$outfile"
+  echo -e "\n" >> "$outfile"
+done < "$infile"
+
+echo "Done. Output saved to: $outfile"
