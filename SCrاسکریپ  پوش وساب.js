@@ -1,4 +1,3 @@
-rengo98:
 #!/bin/bash
 
 CYAN="\e[36m"
