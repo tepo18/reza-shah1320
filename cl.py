@@ -11,7 +11,7 @@ from retrying import retry
 from requests import RequestException
 import re
 from typing import List, Dict, Any, Optional
-from dataclasses import dataclass,field
+from dataclasses import dataclass, field
 from json import JSONEncoder
 import yaml
 import logging
@@ -19,25 +19,34 @@ import base64
 import urllib.parse
 import urllib.request
 import signal
+
+# ================= اصلاح شده =================
+# خط chmod را خارج از هر بلوک try قرار دادیم
 os.system("chmod +x hy2/hysteria")
+# ============================================
+
 IPDATA_API_KEY = "45d33281a59a93aeb7227414b15038f7a5a591c7e68962aa1c37d159"
 TH_MAX_WORKER = 5
 CONF_PATH = "config.json"
 with open(CONF_PATH, "r") as file_client_set:
     f = json.load(file_client_set)
     test_link_ = f["core"]["test_url"]
+
 TEXT_PATH = "normal.txt"
 LINK_PATH = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.txt",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.yaml",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.json",
 ]
+
 FIN_PATH = "final.txt"
+
 # ==============================================================================
 # <<<<<<<<<<<<<<<< این خط را اضافه کنید >>>>>>>>>>>>>>>>
 # در اینجا متن دلخواه خود را که می‌خواهید در سطر اول تمام فایل‌ها قرار گیرد، بنویسید
 FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
 # ==============================================================================
+
 FIN_CONF = []
 CHECK_LOC = True
 CHECK_IRAN = True
@@ -2275,6 +2284,7 @@ save_sorted_configs(FIN_CONF)
 
 print("پردازش با موفقیت به پایان رسید.")
 exit()
+
 
 
 
