@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
-import time
-import json
-import yaml
-import base64
-import threading
-import urllib.parse
+import os, time, json, yaml, base64, threading, urllib.parse
 
 # مسیر فایل‌های منابع
 TEXT_PATH = "tepo98.txt"
@@ -21,7 +15,16 @@ FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+Y
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def remove_empty_lines(lst):
-    return [line.strip() for line in lst if line and line.strip()]
+    """همه آیتم‌ها را به رشته تبدیل کرده، خطوط خالی را حذف می‌کند"""
+    final_list = []
+    for line in lst:
+        try:
+            s = str(line).strip()
+            if s:
+                final_list.append(s)
+        except Exception as e:
+            print(f"[!] خطا در تبدیل آیتم به رشته: {line} | {e}")
+    return final_list
 
 def clear_duplicates(lst):
     seen = set()
@@ -81,6 +84,7 @@ def process_and_save():
     all_configs = clear_duplicates(all_configs)
     print(f"[INFO] تعداد کانفیگ یکتا: {len(all_configs)}")
 
+    # تقسیم ساده برای سه ساب
     sub1 = [c for c in all_configs if ("vmess" in c or "vless" in c or "trojan" in c)]
     sub2 = [c for c in all_configs if ("hy2" in c or "hysteria" in c or "ss" in c)]
     sub3 = [c for c in all_configs if ("socks" in c or "wireguard" in c or "json" in c)]
@@ -107,7 +111,7 @@ def auto_updater(interval_seconds=3600):
 def start_daemon():
     t = threading.Thread(target=auto_updater, daemon=True)
     t.start()
-    print("[🚀] آپدیت خودکار (دایمون) اجرا شد. برای خروج Ctrl+C")
+    print("[🚀] آپدیت خودکار (دايمون) اجرا شد. برای خروج Ctrl+C")
     try:
         while True:
             time.sleep(60)
