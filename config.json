@@ -1,0 +1,8 @@
+{
+  "sources": [
+    "tepo98.txt",
+    "tepo98.yaml",
+    "tepo98.json"
+  ],
+  "output": "final.txt"
+}
