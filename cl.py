@@ -195,7 +195,7 @@ def parse_configs(conifg, num=0, cv=1, hy2_path="hy2/config.yaml", is_hy2=False)
         extra_params: Dict[str, Any] = field(default_factory=dict)
     def parse_configs_by_get(config: str) -> ConfigParams:
         """Parse all possible parameters from config strings"""
-        try:
+        
             config = config.strip()
             config = urllib.parse.unquote(config)
             config_parts = config.split('#', 1)
@@ -2284,6 +2284,7 @@ save_sorted_configs(FIN_CONF)
 
 print("پردازش با موفقیت به پایان رسید.")
 exit()
+
 
 
 
