@@ -21,6 +21,228 @@ import urllib.request
 import signal
 os.system("chmod +x hy2/hysteria")
 IPDATA_API_KEY = "45d33281a59a93aeb7227414b15038f7a5a591c7e68962aa1c37d159"
+TH_MAX_WORKER = 5
+CONF_PATH = "config.json"
+with open(CONF_PATH, "r") as file_client_set:
+    f = json.load(file_client_set)
+    test_link_ = f["core"]["test_url"]
+TEXT_PATH = "normal.txt"
+LINK_PATH = [
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.txt",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.yaml",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.json",
+]
+FIN_PATH = "final.txt"
+# ==============================================================================
+# <<<<<<<<<<<<<<<< این خط را اضافه کنید >>>>>>>>>>>>>>>>
+# در اینجا متن دلخواه خود را که می‌خواهید در سطر اول تمام فایل‌ها قرار گیرد، بنویسید
+FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
+# ==============================================================================
+FIN_CONF = []
+CHECK_LOC = True
+CHECK_IRAN = True
+CHECK_HOST_IRANIAN_NODES = [
+    "ir1.node.check-host.net",  # Tehran, AS44244 Mobile Communication Company of Iran (MCI)
+    "ir2.node.check-host.net",  # Tehran, AS12880 Telecommunication Infrastructure Company (TIC زیرساخت)
+    "ir3.node.check-host.net",  # Tehran, AS58224 Rightel
+]
+def remove_empty_strings(input_list):
+    return [item for item in input_list if item and item != "\n"]
+def clear_p(configs_list: list) -> list:
+    unique_configs = {}
+    for config_line in configs_list:
+        config_line = config_line.strip()
+        if not config_line:
+            continue
+        unique_key = None
+        if config_line.startswith("vmess://"):
+            try:
+                encoded_part = config_line.split("://")[1]
+                missing_padding = len(encoded_part) % 4
+                if missing_padding:
+                    encoded_part += '=' * (4 - missing_padding)
+                decoded_json = base64.b64decode(encoded_part).decode('utf-8')
+                data = json.loads(decoded_json)
+                unique_key = ("vmess", data.get('add'), data.get('port'), data.get('id'))
+            except (json.JSONDecodeError, base64.binascii.Error, Exception):
+                unique_key = config_line
+        else:
+            unique_key = config_line.split('#', 1)[0]
+        if unique_key not in unique_configs:
+            unique_configs[unique_key] = config_line
+    final_list = [f"{config}\n" for config in unique_configs.values()]
+    return remove_empty_strings(final_list)
+class ProcessManager:
+    """
+    Manages background processes (like Xray, Hysteria) started by the script.
+    Ensures proper termination on Linux systems using SIGTERM and SIGKILL.
+    """
+    def __init__(self):
+        self.active_processes = {}
+        self.lock = threading.Lock()
+        print("ProcessManager initialized.")
+    def add_process(self, name: str, pid: int):
+        """یک پردازش جدید را به لیست مدیریت‌شده اضافه می‌کند."""
+        with self.lock:
+            if name in self.active_processes:
+                print(f"Warning: Process name '{name}' already exists with PID {self.active_processes[name]}. Overwriting with new PID {pid}.")
+            print(f"Tracking process '{name}' with PID {pid}.")
+            self.active_processes[name] = pid
+    def stop_process(self, name: str):
+        """یک پردازش مشخص را با نام آن متوقف می‌کند."""
+        pid_to_stop = None
+        with self.lock:
+            if name in self.active_processes:
+                pid_to_stop = self.active_processes.pop(name)
+                print(f"Attempting to stop process '{name}' with PID {pid_to_stop}. Removed from tracking list.")
+            else:
+                print(f"Process '{name}' not found in active processes list for stopping.")
+                return
+        if pid_to_stop is None:
+            print(f"Error: Could not retrieve PID for '{name}' despite being found initially.")
+            return
+        try:
+            if psutil.pid_exists(pid_to_stop):
+                print(f"  Sending SIGTERM (polite request) to PID {pid_to_stop}...")
+                os.kill(pid_to_stop, signal.SIGTERM)
+                time.sleep(1)
+                if psutil.pid_exists(pid_to_stop):
+                    print(f"  PID {pid_to_stop} still exists after SIGTERM. Sending SIGKILL (force kill)...")
+                    os.kill(pid_to_stop, signal.SIGKILL)
+                    time.sleep(0.1)
+                    if psutil.pid_exists(pid_to_stop):
+                        print(f"  WARNING: PID {pid_to_stop} could not be terminated even with SIGKILL!")
+                    else:
+                        print(f"  PID {pid_to_stop} terminated successfully by SIGKILL.")
+                else:
+                    print(f"  PID {pid_to_stop} terminated gracefully by SIGTERM.")
+            else:
+                print(f"  Process with PID {pid_to_stop} was already gone before stop attempt.")
+        except (ProcessLookupError, psutil.NoSuchProcess):
+            print(f"  Process with PID {pid_to_stop} disappeared during termination attempt.")
+        except PermissionError:
+            print(f"  ERROR: Permission denied to send signal to PID {pid_to_stop}.")
+        except Exception as e:
+            print(f"  ERROR: An unexpected error occurred while stopping PID {pid_to_stop}: {e}")
+    def stop_all(self):
+        """تمام پردازش‌های مدیریت‌شده را متوقف می‌کند."""
+        print("Stopping all tracked processes...")
+        names_to_stop = []
+        with self.lock:
+            names_to_stop = list(self.active_processes.keys())
+        if not names_to_stop:
+            print("No active processes were being tracked.")
+            return
+        print(f"Found {len(names_to_stop)} processes to stop: {names_to_stop}")
+        for name in names_to_stop:
+            self.stop_process(name)
+        print("Finished stopping all tracked processes.")
+process_manager = ProcessManager()
+xray_abs = "xray/xray"
+def parse_configs(conifg, num=0, cv=1, hy2_path="hy2/config.yaml", is_hy2=False):  # nuitka: pragma: no cover
+    @dataclass
+    class ConfigParams:
+        protocol: str
+        address: str
+        port: int
+        security: Optional[str] = ""
+        encryption: Optional[str] = "none"
+        header_type: Optional[str] = "none"
+        network: Optional[str] = "tcp"
+        flow: Optional[str] = ""
+        sni: Optional[str] = ""
+        fp: Optional[str] = ""
+        alpn: Optional[str] = None
+        pbk: Optional[str] = ""
+        sid: Optional[str] = ""
+        spx: Optional[str] = ""
+        tag: Optional[str] = ""
+        id: Optional[str] = ""
+        type: Optional[str] = "tcp"
+        alter_id: Optional[str] = ""
+        mode: Optional[str] = None
+        host: Optional[str] = None
+        path: Optional[str] = None
+        scy: Optional[str] = ""
+        socks_user: Optional[str] = ""
+        ss_method: Optional[str] = "chacha20-poly1305"
+        ss_password: Optional[str] = ""
+        hy2_insecure: Optional[str] = "0"
+        hy2_obfs_password: Optional[str] = ""
+        hy2_hop_interval: Optional[str] = "30"
+        hy2_pinsha256: Optional[str] = ""
+        hy2_obfs: Optional[str] = ""
+        wg_reserved: Optional[str] = ""
+        wg_public_key: Optional[str] = ""
+        wg_endpoint: Optional[str] = ""
+        wg_secret_key: Optional[str] = ""
+        wg_keep_alive: Optional[int] = 10
+        wg_mtu: Optional[int] = 0
+        wg_address: Optional[str] = ""
+        wnoise: Optional[str] = "quic"
+        wnoisecount: Optional[str] = "15"
+        wnoisedelay: Optional[str] = "1-3"
+        wpayloadsize: Optional[str] = "1-8"
+        extra_params: Dict[str, Any] = field(default_factory=dict)
+    def parse_configs_by_get(config: str) -> ConfigParams:
+        """Parse all possible parameters from config strings"""
+        try:
+            config = config.strip()
+            config = urllib.parse.unquote(config)
+            config_parts = config.split('#', 1)
+            main_config = config_parts[0]
+            print(config_parts)
+            tag = urllib.parse.unquote(config_parts[1]) if len(config_parts) > 1 else ""
+            protocol = next((p for p in ["vless", "vmess", "trojan", "hy2", "hysteria2",
+                                         "ss", "socks", "wireguard"] if main_config.startswith(p + "://")), None)
+            if not protocol:
+                raise ValueError("Invalid protocol")
+            common_params = {"protocol": protocol, "tag": tag}
+            if protocol in ["vless", "trojan"]:
+                match = re.search(r'([^:]+)@([^:]+):(\d+)', main_config)
+                if match:
+                    common_params.update({
+                        "id": match.group(1).replace("//", "") if protocol != "trojan" else "",
+                        "address": match.group(2),
+                        "port": int(match.group(3))
+                    })
+            elif protocol == "wireguard":
+                match = re.search(r'([^@]+)@([^:]+):(\d+)', main_config)
+                if match:
+                    common_params.update({
+                        "wg_secret_key": match.group(1).split('wireguard://')[1],
+                        "address": match.group(2),
+                        "port": int(match.group(3))
+                    })
+            elif protocol in ["hy2", "hysteria2"]:
+                match = re.search(rf"{protocol}://([^@]+)@([^:/?#]+):(\d+)", main_config)
+                if match:
+                    common_params.update(
+                        {
+                            "ss_password": match.group(1),
+                            "address": match.group(2),
+                            "port": int(match.group(3)),
+                        }
+                    )
+            else:
+                match = re.search(r'@([^:]+):(\d+)', main_config)
+                if match:
+                    common_params.update({
+                        "address": match.group(1),
+                        "port": int(match.group(2))
+                    })
+            protocol_handlers = {
+                "vless": parse_vless,
+                "vmess": parse_vmess,
+                "trojan": parse_trojan,
+                "hy2": parse_hysteria,
+                "hysteria2": parse_hysteria,
+                "ss": parse_shadowsocks,
+                "socks": parse_socks,
+                "wireguard": parse_wireguard
+        }
+os.system("chmod +x hy2/hysteria")
+IPDATA_API_KEY = "45d33281a59a93aeb7227414b15038f7a5a591c7e68962aa1c37d159"
 TH_MAX_WORKER=5
 CONF_PATH="config.json"
 with open(CONF_PATH,"r") as file_client_set:
@@ -2053,6 +2275,7 @@ save_sorted_configs(FIN_CONF)
 
 print("پردازش با موفقیت به پایان رسید.")
 exit()
+
 
 
 
