@@ -192,51 +192,7 @@ def parse_configs(conifg,num=0,cv=1,hy2_path="hy2/config.yaml",is_hy2=False): # 
             protocol = next((p for p in ["vless", "vmess", "trojan", "hy2", "hysteria2",
                                         "ss", "socks", "wireguard"] if main_config.startswith(p+ "://")), None)
             if not protocol:
-                raise ValueError("Invalid protocol")
-            common_params = {"protocol": protocol, "tag": tag}
-            if protocol in ["vless", "trojan"]:
-                match = re.search(r'([^:]+)@([^:]+):(\d+)', main_config)
-                if match:
-                    common_params.update({
-                        "id": match.group(1).replace("//","") if protocol != "trojan" else "",
-                        "address": match.group(2),
-                        "port": int(match.group(3))
-                    })
-            elif protocol == "wireguard":
-                match = re.search(r'([^@]+)@([^:]+):(\d+)', main_config)
-                if match:
-                    common_params.update({
-                        "wg_secret_key": match.group(1).split('wireguard://')[1],
-                        "address": match.group(2),
-                        "port": int(match.group(3))
-                    })
-            elif protocol in ["hy2", "hysteria2"]:
-                    match = re.search(rf"{protocol}://([^@]+)@([^:/?#]+):(\d+)", main_config)
-                    if match:
-                        common_params.update(
-                            {
-                                "ss_password": match.group(1),
-                                "address": match.group(2),
-                                "port": int(match.group(3)),
-                            }
-                        )
-            else:
-                match = re.search(r'@([^:]+):(\d+)', main_config)
-                if match:
-                    common_params.update({
-                        "address": match.group(1),
-                        "port": int(match.group(2))
-                    })
-            protocol_handlers = {
-                "vless": parse_vless,
-                "vmess": parse_vmess,
-                "trojan": parse_trojan,
-                "hy2": parse_hysteria,
-                "hysteria2": parse_hysteria,
-                "ss": parse_shadowsocks,
-                "socks": parse_socks,
-                "wireguard": parse_wireguard
-            }
+
             parser = protocol_handlers.get(protocol)
             if not parser:
                 raise NotImplementedError(f"Unsupported protocol: {protocol}")
@@ -2097,6 +2053,7 @@ save_sorted_configs(FIN_CONF)
 
 print("پردازش با موفقیت به پایان رسید.")
 exit()
+
 
 
 
