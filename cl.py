@@ -47,11 +47,11 @@ CHECK_HOST_IRANIAN_NODES = [
     "ir3.node.check-host.net",  # Tehran, AS58224 Rightel
 ]
 def remove_empty_strings(input_list):
-    return [item for item in input_list if item and item != "\n"]
+    return [str(item) for item in input_list if item and str(item) != "\n"]
 def clear_p(configs_list: list) -> list:
     unique_configs = {}
     for config_line in configs_list:
-        config_line = config_line.strip()
+        config_line = str(config_line).strip()
         if not config_line:
             continue
         unique_key = None
@@ -2275,6 +2275,7 @@ save_sorted_configs(FIN_CONF)
 
 print("پردازش با موفقیت به پایان رسید.")
 exit()
+
 
 
 
