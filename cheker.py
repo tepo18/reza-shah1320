@@ -1,10 +1,15 @@
-cat > worker_checker.py <<'PY'
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, time, json, yaml, base64, threading
+import os
+import time
+import json
+import yaml
+import base64
+import threading
+import urllib.parse
 
-# مسیر فایل‌های منابع (اگر نام فایل‌های تو فرق دارد همینجا تغییر بده)
+# مسیر فایل‌های منابع
 TEXT_PATH = "tepo98.txt"
 YAML_PATH = "tepo98.yaml"
 JSON_PATH = "tepo98.json"
@@ -19,17 +24,17 @@ def remove_empty_lines(lst):
     return [line.strip() for line in lst if line and line.strip()]
 
 def clear_duplicates(lst):
-    seen = set(); final = []
+    seen = set()
+    final = []
     for line in lst:
         k = line.split('#',1)[0].strip()
         if k not in seen:
-            seen.add(k); final.append(line.strip())
+            seen.add(k)
+            final.append(line.strip())
     return final
 
 def save_file(path, lines, encode_b64=False):
-    # lines: list of strings (already stripped)
     if not lines:
-        # ایجاد فایل خالی برای جلوگیری از خطا
         open(path, 'w', encoding='utf-8').close()
         print(f"[OK] خالی ساخته شد: {path}")
         return
@@ -76,7 +81,6 @@ def process_and_save():
     all_configs = clear_duplicates(all_configs)
     print(f"[INFO] تعداد کانفیگ یکتا: {len(all_configs)}")
 
-    # جداسازی ساده برای هر ساب (قابل تنظیم/توسعه)
     sub1 = [c for c in all_configs if ("vmess" in c or "vless" in c or "trojan" in c)]
     sub2 = [c for c in all_configs if ("hy2" in c or "hysteria" in c or "ss" in c)]
     sub3 = [c for c in all_configs if ("socks" in c or "wireguard" in c or "json" in c)]
@@ -103,7 +107,7 @@ def auto_updater(interval_seconds=3600):
 def start_daemon():
     t = threading.Thread(target=auto_updater, daemon=True)
     t.start()
-    print("[🚀] آپدیت خودکار (دايمون) اجرا شد. برای خروج Ctrl+C")
+    print("[🚀] آپدیت خودکار (دایمون) اجرا شد. برای خروج Ctrl+C")
     try:
         while True:
             time.sleep(60)
@@ -116,7 +120,7 @@ def manual_update():
 def cli():
     import sys
     if len(sys.argv) < 2:
-        print("Usage: python worker_checker.py [start|manual|once]")
+        print("Usage: python cheker.py [start|manual|once]")
         return
     cmd = sys.argv[1].lower()
     if cmd == "start":
@@ -130,4 +134,3 @@ def cli():
 
 if __name__ == "__main__":
     cli()
-PY
