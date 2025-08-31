@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, threading, time, requests, base64, urllib.parse, psutil, signal, re, socket, subprocess
+import os, threading, time, requests, base64, urllib.parse, re, socket, subprocess
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 
@@ -10,7 +10,6 @@ TH_MAX_WORKER = 5
 TEXT_PATH = "normal.txt"
 FIN_PATH = "final.txt"
 BASE64_TXT = "base64.txt"
-FINAL_RAW = "final.raw"
 UPDATE_INTERVAL = 3600  # ثانیه، آپدیت هر 1 ساعت
 
 LINK_PATH = [
@@ -61,7 +60,7 @@ def parse_config_line(line: str) -> Optional[ConfigParams]:
             port = int(match.group(2))
         tag = line.split("#", 1)[1] if "#" in line else ""
         return ConfigParams(protocol=protocol, address=addr, port=port, tag=tag)
-    except:
+    except Exception:
         return None
 
 def fetch_link(url: str) -> List[str]:
@@ -70,26 +69,20 @@ def fetch_link(url: str) -> List[str]:
         if r.status_code == 200:
             return r.text.splitlines()
         return []
-    except:
+    except Exception:
         return []
 
 def clear_and_merge_configs(lines: List[str]) -> List[str]:
-    final_lines = []
     unique_keys = {}
     for line in lines:
         if not is_valid_config(line):
             continue
         cfg = parse_config_line(line)
-        if cfg:
-            key = f"{cfg.protocol}|{cfg.address}|{cfg.port}|{cfg.id}"
-        else:
-            key = line
+        key = f"{cfg.protocol}|{cfg.address}|{cfg.port}|{cfg.id}" if cfg else line
         if key not in unique_keys:
             unique_keys[key] = line
-    final_lines.extend(unique_keys.values())
-    return final_lines
+    return list(unique_keys.values())
 
-# ===================== تست TCP, Ping, HTTP =====================
 def tcp_test(host: str, port: int, timeout=3) -> bool:
     try:
         with socket.create_connection((host, port), timeout=timeout):
@@ -142,59 +135,58 @@ def process_configs(lines: List[str], precise_test=False) -> List[str]:
 
 def save_outputs(lines: List[str]):
     try:
+        # final.txt
         with open(FIN_PATH, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
+        # base64.txt
         with open(BASE64_TXT, "w", encoding="utf-8") as f:
             f.write("\n".join([base64.b64encode(l.encode()).decode() for l in lines]))
-        with open(FINAL_RAW, "w", encoding="utf-8") as f:
-            f.write("\n".join(lines))
-        with open(TEXT_PATH, "w", encoding="utf-8") as f:
-            f.write("\n".join([FILE_HEADER_TEXT]+lines))
-        print(f"[✅] Saved outputs ({len(lines)} configs)")
+        print(f"[✅] Saved outputs:")
+        print(f"  -> {FIN_PATH}")
+        print(f"  -> {BASE64_TXT}")
     except Exception as e:
         print(f"[❌] Error saving files: {e}")
 
-# ===================== بروزرسانی =====================
 def update_subs():
-    try:
-        all_lines: List[str] = []
-        threads: List[threading.Thread] = []
-        results: List[List[str]] = [None]*len(LINK_PATH)
-        def fetch_worker(i, url):
-            results[i] = fetch_link(url)
-        for i, url in enumerate(LINK_PATH):
-            t = threading.Thread(target=fetch_worker, args=(i,url))
-            threads.append(t)
-            t.start()
-        for t in threads:
-            t.join()
-        for r in results:
-            if r:
-                all_lines.extend(r)
-        all_lines = remove_empty_strings(all_lines)
-        all_lines = clear_and_merge_configs(all_lines)
-        all_lines.insert(0, FILE_HEADER_TEXT)
+    # جمع‌آوری کانفیگ‌ها از لینک‌ها
+    all_lines = []
+    threads = []
+    results = [None] * len(LINK_PATH)
+    def worker(i, url):
+        results[i] = fetch_link(url)
+    for i, url in enumerate(LINK_PATH):
+        t = threading.Thread(target=worker, args=(i, url))
+        threads.append(t)
+        t.start()
+    for t in threads:
+        t.join()
+    for r in results:
+        if r:
+            all_lines.extend(r)
 
-        # مرحله 1: ذخیره اولیه در normal.txt و تست سریع TCP
-        normal_configs = process_configs(all_lines, precise_test=False)
-        with open(TEXT_PATH,"w",encoding="utf-8") as f:
-            f.write("\n".join([FILE_HEADER_TEXT]+normal_configs))
-        print(f"[*] {len(normal_configs)} configs saved to {TEXT_PATH} (preliminary)")
+    # پردازش اولیه و ذخیره در normal.txt
+    all_lines = remove_empty_strings(all_lines)
+    all_lines = clear_and_merge_configs(all_lines)
+    all_lines.insert(0, FILE_HEADER_TEXT)
 
-        # مرحله 2: از normal.txt دوباره بخوان و تست دقیق
-        with open(TEXT_PATH,"r",encoding="utf-8") as f:
-            normal_lines = [l.strip() for l in f.readlines() if l.strip() and not l.startswith("//")]
-        final_configs = process_configs(normal_lines, precise_test=True)
-        save_outputs(final_configs)
-        print("[*] Done. All valid configs saved to final files.")
-    except Exception as e:
-        print(f"[❌] Update failed: {e}")
+    normal_configs = process_configs(all_lines, precise_test=False)
+    with open(TEXT_PATH, "w", encoding="utf-8") as f:
+        f.write("\n".join([FILE_HEADER_TEXT]+normal_configs))
+    print(f"[*] {len(normal_configs)} configs saved to {TEXT_PATH} (preliminary)")
 
-# ===================== حلقه اصلی =====================
+    # پردازش دقیق از normal.txt و ذخیره نهایی در final.txt و base64.txt
+    with open(TEXT_PATH, "r", encoding="utf-8") as f:
+        normal_lines = [l.strip() for l in f.readlines() if l.strip() and l.strip() != FILE_HEADER_TEXT]
+
+    final_configs = process_configs(normal_lines, precise_test=True)
+    save_outputs(final_configs)
+    print(f"[*] Final configs count: {len(final_configs)}")
+    print("[*] Done. All valid configs saved.")
+
 if __name__ == "__main__":
     print("[*] Starting full-feature subscription updater...")
     while True:
         print("[*] Updating subscriptions...")
         update_subs()
-        print(f"[*] Next update in {UPDATE_INTERVAL//60} minutes...\n")
+        print(f"[*] Next update in {UPDATE_INTERVAL // 60} minutes.\n")
         time.sleep(UPDATE_INTERVAL)
