@@ -1,192 +1,146 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, threading, time, requests, base64, urllib.parse, re, socket, subprocess
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+import os, threading, urllib.request, time, platform, subprocess, re
+from typing import List
 
-# ===================== تنظیمات =====================
-TH_MAX_WORKER = 5
-TEXT_PATH = "normal.txt"
-FIN_PATH = "final.txt"
-BASE64_TXT = "base64.txt"
-UPDATE_INTERVAL = 3600  # ثانیه، آپدیت هر 1 ساعت
+# ---------------- مسیر فایل‌ها ----------------
+TEXT_NORMAL = "normal.txt"
+TEXT_FINAL = "final.txt"
+UPDATE_INTERVAL = 3600  # ثانیه (1 ساعت)
 
-LINK_PATH = [
-    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.txt",
-    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.yaml",
-    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo98.json",
+# ---------------- منابع ----------------
+LINKS_RAW = [
+    f"https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo{n}.txt"
+    for n in range(10, 100, 10)
 ]
 
-FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
+FILE_HEADER = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
 
-# ===================== کلاس کانفیگ =====================
-@dataclass
-class ConfigParams:
-    protocol: str
-    address: str
-    port: int
-    tag: Optional[str] = ""
-    id: Optional[str] = ""
-    extra_params: Dict[str, Any] = field(default_factory=dict)
-
-# ===================== توابع =====================
-def remove_empty_strings(lst: List[str]) -> List[str]:
-    return [str(item).strip() for item in lst if item and str(item).strip()]
+# ---------------- دریافت محتوا ----------------
+def fetch_text(url: str) -> List[str]:
+    try:
+        with urllib.request.urlopen(url, timeout=15) as resp:
+            data = resp.read().decode().splitlines()
+        return [line.strip() for line in data if line.strip()]
+    except:
+        print(f"[⚠️] Cannot fetch or empty source: {url}")
+        return []
 
 def is_valid_config(line: str) -> bool:
-    line = line.strip()
-    if not line or len(line) < 5:
-        return False
     lower = line.lower()
-    if "pin=0" in lower or "pin=red" in lower or "pin=قرمز" in lower:
-        return False
+    if not line or len(line) < 5: return False
+    if "pin=0" in lower or "pin=red" in lower or "pin=قرمز" in lower: return False
     return True
 
-def parse_config_line(line: str) -> Optional[ConfigParams]:
+def ping(host: str, count: int = 1, timeout: int = 1000) -> float:
+    param_count = "-n" if platform.system().lower() == "windows" else "-c"
+    param_timeout = "-w" if platform.system().lower() == "windows" else "-W"
     try:
-        line = urllib.parse.unquote(line.strip())
-        protocol = None
-        for p in ["vmess", "vless", "trojan", "hy2", "hysteria2", "ss", "socks", "wireguard"]:
-            if line.startswith(p + "://"):
-                protocol = p
-                break
-        if not protocol:
-            return None
-        addr, port = "unknown", 0
-        match = re.search(r"@([^:]+):(\d+)", line)
+        cmd = ["ping", param_count, str(count), param_timeout, str(timeout), host]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        match = re.search(r'time[=<]\s*(\d+\.?\d*)', result.stdout)
         if match:
-            addr = match.group(1)
-            port = int(match.group(2))
-        tag = line.split("#", 1)[1] if "#" in line else ""
-        return ConfigParams(protocol=protocol, address=addr, port=port, tag=tag)
-    except Exception:
-        return None
-
-def fetch_link(url: str) -> List[str]:
-    try:
-        r = requests.get(url, timeout=15)
-        if r.status_code == 200:
-            return r.text.splitlines()
-        return []
-    except Exception:
-        return []
-
-def clear_and_merge_configs(lines: List[str]) -> List[str]:
-    unique_keys = {}
-    for line in lines:
-        if not is_valid_config(line):
-            continue
-        cfg = parse_config_line(line)
-        key = f"{cfg.protocol}|{cfg.address}|{cfg.port}|{cfg.id}" if cfg else line
-        if key not in unique_keys:
-            unique_keys[key] = line
-    return list(unique_keys.values())
-
-def tcp_test(host: str, port: int, timeout=3) -> bool:
-    try:
-        with socket.create_connection((host, port), timeout=timeout):
-            return True
+            return float(match.group(1))
     except:
-        return False
+        pass
+    return float('inf')
 
-def ping_test(host: str, count=1, timeout=1000) -> bool:
-    try:
-        result = subprocess.run(["ping", "-c", str(count), "-W", str(timeout), host],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return result.returncode == 0
-    except:
-        return False
-
-def http_test(host: str, timeout=5) -> bool:
-    try:
-        url = f"https://{host}"
-        r = requests.get(url, timeout=timeout)
-        return r.status_code == 200
-    except:
-        return False
-
-def process_configs(lines: List[str], precise_test=False) -> List[str]:
-    valid_configs = []
+# ---------------- پردازش اولیه ----------------
+def process_configs(configs: List[str], max_threads=20) -> List[str]:
+    results = []
     lock = threading.Lock()
-    def worker(line):
-        cfg = parse_config_line(line)
-        passed = False
-        if cfg:
-            host = cfg.address
-            port = cfg.port or 443
-            if precise_test:
-                passed = tcp_test(host, port) and ping_test(host) and http_test(host)
-            else:
-                passed = tcp_test(host, port)
-        else:
-            passed = True
-        if passed:
-            with lock:
-                valid_configs.append(line)
     threads = []
+
+    def worker(line: str):
+        if not is_valid_config(line): return
+        match = re.search(r'@([^:]+):(\d+)', line)
+        if not match: return
+        host = match.group(1)
+        ping_time = ping(host)
+        if ping_time < float('inf'):
+            with lock:
+                results.append(line)
+
+    for line in configs:
+        t = threading.Thread(target=worker, args=(line,))
+        threads.append(t)
+        t.start()
+        if len(threads) >= max_threads:
+            for th in threads: th.join()
+            threads = []
+    for t in threads: t.join()
+    return list(dict.fromkeys(results))
+
+# ---------------- بررسی نهایی روی final.txt ----------------
+def final_validation(file_path: str) -> List[str]:
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except:
+        return []
+
+    valid_final = []
+    lock = threading.Lock()
+    threads = []
+
+    def worker(line: str):
+        if not is_valid_config(line): return
+        match = re.search(r'@([^:]+):(\d+)', line)
+        if not match: return
+        host = match.group(1)
+        ping_time = ping(host)
+        if ping_time < float('inf'):
+            with lock:
+                valid_final.append(line)
+
     for line in lines:
         t = threading.Thread(target=worker, args=(line,))
         threads.append(t)
         t.start()
-    for t in threads:
-        t.join()
-    return clear_and_merge_configs(valid_configs)
+    for t in threads: t.join()
+    return list(dict.fromkeys(valid_final))
 
-def save_outputs(lines: List[str]):
-    try:
-        # final.txt
-        with open(FIN_PATH, "w", encoding="utf-8") as f:
-            f.write("\n".join(lines))
-        # base64.txt
-        with open(BASE64_TXT, "w", encoding="utf-8") as f:
-            f.write("\n".join([base64.b64encode(l.encode()).decode() for l in lines]))
-        print(f"[✅] Saved outputs:")
-        print(f"  -> {FIN_PATH}")
-        print(f"  -> {BASE64_TXT}")
-    except Exception as e:
-        print(f"[❌] Error saving files: {e}")
+# ---------------- ذخیره فایل‌ها ----------------
+def save_files(normal_configs: List[str], final_configs: List[str]):
+    with open(TEXT_NORMAL, "w", encoding="utf-8") as f:
+        f.write("\n".join([FILE_HEADER]+normal_configs))
+    with open(TEXT_FINAL, "w", encoding="utf-8") as f:
+        f.write("\n".join(final_configs))
+    print(f"[✅] Saved outputs:")
+    print(f"  -> {TEXT_NORMAL}")
+    print(f"  -> {TEXT_FINAL}")
 
-def update_subs():
-    # جمع‌آوری کانفیگ‌ها از لینک‌ها
-    all_lines = []
-    threads = []
-    results = [None] * len(LINK_PATH)
-    def worker(i, url):
-        results[i] = fetch_link(url)
-    for i, url in enumerate(LINK_PATH):
-        t = threading.Thread(target=worker, args=(i, url))
-        threads.append(t)
-        t.start()
-    for t in threads:
-        t.join()
-    for r in results:
-        if r:
-            all_lines.extend(r)
+# ---------------- بروزرسانی ----------------
+def update_all():
+    all_configs = []
+    for url in LINKS_RAW:
+        data = fetch_text(url)
+        if data:
+            all_configs.extend(data)
 
-    # پردازش اولیه و ذخیره در normal.txt
-    all_lines = remove_empty_strings(all_lines)
-    all_lines = clear_and_merge_configs(all_lines)
-    all_lines.insert(0, FILE_HEADER_TEXT)
+    all_configs = [line for line in all_configs if is_valid_config(line)]
+    print(f"[*] {len(all_configs)} configs fetched from sources.")
 
-    normal_configs = process_configs(all_lines, precise_test=False)
-    with open(TEXT_PATH, "w", encoding="utf-8") as f:
-        f.write("\n".join([FILE_HEADER_TEXT]+normal_configs))
-    print(f"[*] {len(normal_configs)} configs saved to {TEXT_PATH} (preliminary)")
+    # ذخیره اولیه در normal.txt
+    save_files(all_configs, [])
 
-    # پردازش دقیق از normal.txt و ذخیره نهایی در final.txt و base64.txt
-    with open(TEXT_PATH, "r", encoding="utf-8") as f:
-        normal_lines = [l.strip() for l in f.readlines() if l.strip() and l.strip() != FILE_HEADER_TEXT]
+    # پردازش اولیه و ریختن در final.txt
+    processed = process_configs(all_configs)
+    save_files(all_configs, processed)
 
-    final_configs = process_configs(normal_lines, precise_test=True)
-    save_outputs(final_configs)
-    print(f"[*] Final configs count: {len(final_configs)}")
-    print("[*] Done. All valid configs saved.")
+    # بررسی دقیق نهایی روی final.txt
+    validated_final = final_validation(TEXT_FINAL)
+    save_files(all_configs, validated_final)
+    print(f"[*] Final validation done: {len(validated_final)} configs in {TEXT_FINAL}")
 
+# ---------------- Main ----------------
 if __name__ == "__main__":
-    print("[*] Starting full-feature subscription updater...")
+    print("[*] Starting subscription updater with hourly auto-update...")
     while True:
-        print("[*] Updating subscriptions...")
-        update_subs()
-        print(f"[*] Next update in {UPDATE_INTERVAL // 60} minutes.\n")
-        time.sleep(UPDATE_INTERVAL)
+        start = time.time()
+        update_all()
+        elapsed = time.time() - start
+        sleep_time = max(0, UPDATE_INTERVAL - elapsed)
+        print(f"[*] Next update in {sleep_time:.0f} seconds (~{sleep_time/60:.1f} min).")
+        time.sleep(sleep_time)
