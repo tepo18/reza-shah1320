@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, sys, json, threading, time, requests, base64, urllib.parse, psutil, signal, re, socket, subprocess
+import os, threading, time, requests, base64, urllib.parse, psutil, signal, re, socket, subprocess
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 
 # ===================== تنظیمات =====================
 TH_MAX_WORKER = 5
-CONF_PATH = "config.json"
 TEXT_PATH = "normal.txt"
 FIN_PATH = "final.txt"
 BASE64_TXT = "base64.txt"
@@ -21,35 +20,6 @@ LINK_PATH = [
 ]
 
 FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
-
-# ===================== مدیریت پردازش =====================
-class ProcessManager:
-    def __init__(self):
-        self.active_processes = {}
-        self.lock = threading.Lock()
-    def add_process(self, name: str, pid: int):
-        with self.lock:
-            self.active_processes[name] = pid
-    def stop_process(self, name: str):
-        pid_to_stop = None
-        with self.lock:
-            if name in self.active_processes:
-                pid_to_stop = self.active_processes.pop(name)
-        if pid_to_stop and psutil.pid_exists(pid_to_stop):
-            try:
-                os.kill(pid_to_stop, signal.SIGTERM)
-                time.sleep(0.5)
-                if psutil.pid_exists(pid_to_stop):
-                    os.kill(pid_to_stop, signal.SIGKILL)
-            except Exception:
-                pass
-    def stop_all(self):
-        with self.lock:
-            names = list(self.active_processes.keys())
-        for name in names:
-            self.stop_process(name)
-
-process_manager = ProcessManager()
 
 # ===================== کلاس کانفیگ =====================
 @dataclass
@@ -91,7 +61,7 @@ def parse_config_line(line: str) -> Optional[ConfigParams]:
             port = int(match.group(2))
         tag = line.split("#", 1)[1] if "#" in line else ""
         return ConfigParams(protocol=protocol, address=addr, port=port, tag=tag)
-    except Exception:
+    except:
         return None
 
 def fetch_link(url: str) -> List[str]:
@@ -100,7 +70,7 @@ def fetch_link(url: str) -> List[str]:
         if r.status_code == 200:
             return r.text.splitlines()
         return []
-    except Exception:
+    except:
         return []
 
 def clear_and_merge_configs(lines: List[str]) -> List[str]:
@@ -116,8 +86,7 @@ def clear_and_merge_configs(lines: List[str]) -> List[str]:
             key = line
         if key not in unique_keys:
             unique_keys[key] = line
-    for val in unique_keys.values():
-        final_lines.append(val)
+    final_lines.extend(unique_keys.values())
     return final_lines
 
 # ===================== تست TCP, Ping, HTTP =====================
@@ -147,7 +116,6 @@ def http_test(host: str, timeout=5) -> bool:
 def process_configs(lines: List[str], precise_test=False) -> List[str]:
     valid_configs = []
     lock = threading.Lock()
-
     def worker(line):
         cfg = parse_config_line(line)
         passed = False
@@ -163,7 +131,6 @@ def process_configs(lines: List[str], precise_test=False) -> List[str]:
         if passed:
             with lock:
                 valid_configs.append(line)
-
     threads = []
     for line in lines:
         t = threading.Thread(target=worker, args=(line,))
@@ -171,64 +138,57 @@ def process_configs(lines: List[str], precise_test=False) -> List[str]:
         t.start()
     for t in threads:
         t.join()
-
     return clear_and_merge_configs(valid_configs)
 
-# ===================== ذخیره خروجی ها =====================
 def save_outputs(lines: List[str]):
     try:
         with open(FIN_PATH, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
-        b64_lines = [base64.b64encode(line.encode()).decode() for line in lines]
         with open(BASE64_TXT, "w", encoding="utf-8") as f:
-            f.write("\n".join(b64_lines))
+            f.write("\n".join([base64.b64encode(l.encode()).decode() for l in lines]))
         with open(FINAL_RAW, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
         with open(TEXT_PATH, "w", encoding="utf-8") as f:
             f.write("\n".join([FILE_HEADER_TEXT]+lines))
-        print(f"[✅] Saved outputs ({len(lines)} configs):")
-        print(f"  -> {FIN_PATH}")
-        print(f"  -> {BASE64_TXT}")
-        print(f"  -> {FINAL_RAW}")
-        print(f"  -> {TEXT_PATH}")
+        print(f"[✅] Saved outputs ({len(lines)} configs)")
     except Exception as e:
         print(f"[❌] Error saving files: {e}")
 
-# ===================== بروزرسانی کانفیگ ها =====================
+# ===================== بروزرسانی =====================
 def update_subs():
-    all_lines: List[str] = []
-    threads: List[threading.Thread] = []
-    results: List[List[str]] = [None] * len(LINK_PATH)
+    try:
+        all_lines: List[str] = []
+        threads: List[threading.Thread] = []
+        results: List[List[str]] = [None]*len(LINK_PATH)
+        def fetch_worker(i, url):
+            results[i] = fetch_link(url)
+        for i, url in enumerate(LINK_PATH):
+            t = threading.Thread(target=fetch_worker, args=(i,url))
+            threads.append(t)
+            t.start()
+        for t in threads:
+            t.join()
+        for r in results:
+            if r:
+                all_lines.extend(r)
+        all_lines = remove_empty_strings(all_lines)
+        all_lines = clear_and_merge_configs(all_lines)
+        all_lines.insert(0, FILE_HEADER_TEXT)
 
-    def worker(i: int, url: str):
-        results[i] = fetch_link(url)
+        # مرحله 1: ذخیره اولیه در normal.txt و تست سریع TCP
+        normal_configs = process_configs(all_lines, precise_test=False)
+        with open(TEXT_PATH,"w",encoding="utf-8") as f:
+            f.write("\n".join([FILE_HEADER_TEXT]+normal_configs))
+        print(f"[*] {len(normal_configs)} configs saved to {TEXT_PATH} (preliminary)")
 
-    for i, url in enumerate(LINK_PATH):
-        t = threading.Thread(target=worker, args=(i, url))
-        threads.append(t)
-        t.start()
-    for t in threads:
-        t.join()
-
-    for r in results:
-        if r:
-            all_lines.extend(r)
-
-    all_lines = remove_empty_strings(all_lines)
-    all_lines = clear_and_merge_configs(all_lines)
-    all_lines = list(dict.fromkeys(all_lines))
-    all_lines.insert(0, FILE_HEADER_TEXT)
-
-    # مرحله اول: ذخیره در normal.txt و تست سریع TCP
-    normal_configs = process_configs(all_lines, precise_test=False)
-    with open(TEXT_PATH, "w", encoding="utf-8") as f:
-        f.write("\n".join([FILE_HEADER_TEXT]+normal_configs))
-    print(f"[*] {len(normal_configs)} configs saved to {TEXT_PATH} (preliminary)")
-
-    # مرحله دوم: تست دقیق و ذخیره نهایی
-    final_configs = process_configs(normal_configs, precise_test=True)
-    save_outputs(final_configs)
-    print("[*] Done. All valid configs saved.")
+        # مرحله 2: از normal.txt دوباره بخوان و تست دقیق
+        with open(TEXT_PATH,"r",encoding="utf-8") as f:
+            normal_lines = [l.strip() for l in f.readlines() if l.strip() and not l.startswith("//")]
+        final_configs = process_configs(normal_lines, precise_test=True)
+        save_outputs(final_configs)
+        print("[*] Done. All valid configs saved to final files.")
+    except Exception as e:
+        print(f"[❌] Update failed: {e}")
 
 # ===================== حلقه اصلی =====================
 if __name__ == "__main__":
@@ -236,6 +196,5 @@ if __name__ == "__main__":
     while True:
         print("[*] Updating subscriptions...")
         update_subs()
-        print(f"[*] Next update in {UPDATE_INTERVAL // 60} minutes...\n")
+        print(f"[*] Next update in {UPDATE_INTERVAL//60} minutes...\n")
         time.sleep(UPDATE_INTERVAL)
-
