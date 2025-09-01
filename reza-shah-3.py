@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, json, threading, time, requests, base64, urllib.parse, socket
-from typing import List
+import os, json, threading, time, requests, base64, urllib.parse, socket, subprocess
+from typing import List, Dict
 
 # ===================== تنظیمات =====================
-TEXT_PATH = "normal.txt"
-FIN_PATH = "final.txt"
+TEXT_PATH = "normal1.txt"
+FIN_PATH = "final1.txt"
 UPDATE_INTERVAL = 3600  # ثانیه، آپدیت هر 1 ساعت
 
 LINK_PATH = [
@@ -15,6 +15,10 @@ LINK_PATH = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo30.txt",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo40.txt",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo50.txt",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo60.txt",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo70.txt",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo80.txt",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo90.txt",
 ]
 
 FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
@@ -96,7 +100,7 @@ def save_outputs(lines: List[str]):
         # ذخیره normal
         with open(TEXT_PATH, "w", encoding="utf-8") as f:
             f.write("\n".join([FILE_HEADER_TEXT]+lines))
-        # ذخیره final با تست دقیق
+        # ذخیره final
         final_lines = process_configs(lines, precise_test=True)
         with open(FIN_PATH, "w", encoding="utf-8") as f:
             f.write("\n".join(final_lines))
