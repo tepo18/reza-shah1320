@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, sys, json, threading, time, requests, base64, urllib.parse, psutil, signal, re
+import os, json, requests, urllib.parse, re
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
+from concurrent.futures import ThreadPoolExecutor
 
 # ===================== تنظیمات =====================
 TH_MAX_WORKER = 10
-CONF_PATH = "config.json"
-TEXT_PATH = "normal.txt"
-FIN_PATH = "final.txt"
-UPDATE_INTERVAL = 20000 # ثانیه، آپدیت هر 1 ساعت
-
+TEXT_PATH = "normal.txt"    # خروجی مرحله اول
+FIN_PATH = "final.txt"      # خروجی مرحله دوم
 LINK_PATH = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/ss.txt",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/vless.txt",
@@ -21,39 +19,8 @@ LINK_PATH = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo40.txt",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo50.txt",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/trojan.txt",
-    
 ]
-
 FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
-
-# ===================== مدیریت پردازش =====================
-class ProcessManager:
-    def __init__(self):
-        self.active_processes = {}
-        self.lock = threading.Lock()
-    def add_process(self, name: str, pid: int):
-        with self.lock:
-            self.active_processes[name] = pid
-    def stop_process(self, name: str):
-        pid_to_stop = None
-        with self.lock:
-            if name in self.active_processes:
-                pid_to_stop = self.active_processes.pop(name)
-        if pid_to_stop and psutil.pid_exists(pid_to_stop):
-            try:
-                os.kill(pid_to_stop, signal.SIGTERM)
-                time.sleep(0.5)
-                if psutil.pid_exists(pid_to_stop):
-                    os.kill(pid_to_stop, signal.SIGKILL)
-            except Exception:
-                pass
-    def stop_all(self):
-        with self.lock:
-            names = list(self.active_processes.keys())
-        for name in names:
-            self.stop_process(name)
-
-process_manager = ProcessManager()
 
 # ===================== کلاس کانفیگ =====================
 @dataclass
@@ -65,18 +32,9 @@ class ConfigParams:
     id: Optional[str] = ""
     extra_params: Dict[str, Any] = field(default_factory=dict)
 
-# ===================== توابع =====================
+# ===================== توابع کمکی =====================
 def remove_empty_strings(lst: List[str]) -> List[str]:
     return [str(item).strip() for item in lst if item and str(item).strip()]
-
-def is_valid_config(line: str) -> bool:
-    line = line.strip()
-    if not line or len(line) < 5:
-        return False
-    lower = line.lower()
-    if "pin=0" in lower or "pin=red" in lower or "pin=قرمز" in lower:
-        return False
-    return True
 
 def parse_config_line(line: str) -> Optional[ConfigParams]:
     try:
@@ -98,6 +56,15 @@ def parse_config_line(line: str) -> Optional[ConfigParams]:
     except Exception:
         return None
 
+def is_valid_config(line: str) -> bool:
+    line = line.strip()
+    if not line or len(line) < 5:
+        return False
+    lower = line.lower()
+    if "pin=0" in lower or "pin=red" in lower or "pin=قرمز" in lower:
+        return False
+    return True
+
 def fetch_link(url: str) -> List[str]:
     try:
         r = requests.get(url, timeout=15)
@@ -108,71 +75,65 @@ def fetch_link(url: str) -> List[str]:
     except Exception:
         return []
 
-def clear_and_merge_configs(lines: List[str]) -> List[str]:
-    final_lines = []
-    unique_keys = {}
-    for line in lines:
-        if not is_valid_config(line):
-            continue
+# ===================== تست پین =====================
+def ping_config_line(line: str) -> bool:
+    """بررسی پین کانفیگ. True اگر پین مثبت باشد."""
+    try:
         cfg = parse_config_line(line)
-        if cfg:
-            key = f"{cfg.protocol}|{cfg.address}|{cfg.port}|{cfg.id}"
-        else:
-            key = line
-        if key not in unique_keys:
-            unique_keys[key] = line
-    for val in unique_keys.values():
-        final_lines.append(val)
-    return final_lines
+        if not cfg:
+            return False
+        if "pin=0" in line.lower():
+            return False
+        return True
+    except Exception:
+        return False
 
-def update_subs():
+def test_lines_parallel(lines: List[str], max_workers: int) -> List[str]:
+    """تست پین کانفیگ‌ها به صورت موازی"""
+    valid_lines: List[str] = []
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        results = list(executor.map(ping_config_line, lines))
+    for line, is_valid in zip(lines, results):
+        if is_valid:
+            valid_lines.append(line)
+    return valid_lines
+
+# ===================== مراحل اصلی =====================
+def clear_outputs():
+    for path in [TEXT_PATH, FIN_PATH]:
+        with open(path, "w", encoding="utf-8") as f:
+            pass
+    print("[*] فایل‌های خروجی پاکسازی شدند.")
+
+def process_sources_to_normal():
+    """خواندن منابع، تست پین و ذخیره سالم‌ها در normal.txt"""
     all_lines: List[str] = []
-    threads: List[threading.Thread] = []
-    results: List[List[str]] = [None] * len(LINK_PATH)
-
-    def worker(i: int, url: str):
-        results[i] = fetch_link(url)
-
-    for i, url in enumerate(LINK_PATH):
-        t = threading.Thread(target=worker, args=(i, url))
-        threads.append(t)
-        t.start()
-
-    for t in threads:
-        t.join()
-
-    for r in results:
-        if r:
-            all_lines.extend(r)
-
-    total_before = len(all_lines)
+    for url in LINK_PATH:
+        all_lines.extend(fetch_link(url))
     all_lines = remove_empty_strings(all_lines)
-    all_lines = clear_and_merge_configs(all_lines)
-    all_lines = list(dict.fromkeys(all_lines))
-    total_after = len(all_lines)
+    normal_lines = [FILE_HEADER_TEXT] + test_lines_parallel(all_lines, TH_MAX_WORKER)
+    with open(TEXT_PATH, "w", encoding="utf-8") as f:
+        f.write("\n".join(normal_lines))
+    print(f"[+] {len(normal_lines)-1} کانفیگ سالم در {TEXT_PATH} ذخیره شد.")
 
-    removed_count = total_before - total_after
-    all_lines.insert(0, FILE_HEADER_TEXT)
-
-    try:
-        with open(FIN_PATH, "w") as f:
-            f.write("\n".join(all_lines))
-        print(f"[+] Updated {FIN_PATH} with {len(all_lines)} lines, removed {removed_count}")
-    except Exception as e:
-        print(f"[!] Error writing {FIN_PATH}: {e}")
-
-    try:
-        with open(TEXT_PATH, "w") as f:
-            f.write("\n".join(all_lines))
-        print(f"[+] Updated {TEXT_PATH} with {len(all_lines)} lines")
-    except Exception as e:
-        print(f"[!] Error writing {TEXT_PATH}: {e}")
+def process_normal_to_final():
+    """خواندن normal.txt، تست مجدد پین و ذخیره بهترین‌ها در final.txt"""
+    if not os.path.exists(TEXT_PATH):
+        print(f"[!] فایل {TEXT_PATH} موجود نیست.")
+        return
+    with open(TEXT_PATH, "r", encoding="utf-8") as f:
+        lines = f.read().splitlines()
+    lines = remove_empty_strings(lines)
+    # حذف هدر و تست مجدد
+    final_lines = [FILE_HEADER_TEXT] + test_lines_parallel(lines[1:], TH_MAX_WORKER)
+    with open(FIN_PATH, "w", encoding="utf-8") as f:
+        f.write("\n".join(final_lines))
+    print(f"[+] {len(final_lines)-1} کانفیگ نهایی در {FIN_PATH} ذخیره شد.")
 
 # ===================== حلقه اصلی =====================
 if __name__ == "__main__":
-    print("[*] Starting full-feature subscription updater...")
-    while True:
-        print("[*] Updating subscriptions...")
-        update_subs()
-        print(f"[*] Next update in {UPDATE_INTERVAL // 60} minutes...\n")
-        time.sleep(UPDATE_INTERVAL)
+    print("[*] شروع فرآیند دستی تست منابع و پین گیری (موازی)...")
+    clear_outputs()             # پاکسازی اولیه خروجی‌ها
+    process_sources_to_normal() # تست منابع و ریختن به normal
+    process_normal_to_final()   # تست دوباره و ریختن بهترین‌ها به final
+    print("[*] تمام مراحل با موفقیت انجام شد.")
