@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, sys, json, threading, time, requests, base64, urllib.parse, psutil, signal, re
+import os, threading, requests, urllib.parse, re
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 
 # ===================== تنظیمات =====================
-TH_MAX_WORKER = 10
-CONF_PATH = "config.json"
 TEXT_PATH = "normal.txt"
 FIN_PATH = "final.txt"
-UPDATE_INTERVAL = 12000 # ثانیه، آپدیت هر 1 ساعت
 
 LINK_PATH = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/ss.txt",
@@ -29,35 +26,6 @@ LINK_PATH = [
 
 FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
 
-# ===================== مدیریت پردازش =====================
-class ProcessManager:
-    def __init__(self):
-        self.active_processes = {}
-        self.lock = threading.Lock()
-    def add_process(self, name: str, pid: int):
-        with self.lock:
-            self.active_processes[name] = pid
-    def stop_process(self, name: str):
-        pid_to_stop = None
-        with self.lock:
-            if name in self.active_processes:
-                pid_to_stop = self.active_processes.pop(name)
-        if pid_to_stop and psutil.pid_exists(pid_to_stop):
-            try:
-                os.kill(pid_to_stop, signal.SIGTERM)
-                time.sleep(0.5)
-                if psutil.pid_exists(pid_to_stop):
-                    os.kill(pid_to_stop, signal.SIGKILL)
-            except Exception:
-                pass
-    def stop_all(self):
-        with self.lock:
-            names = list(self.active_processes.keys())
-        for name in names:
-            self.stop_process(name)
-
-process_manager = ProcessManager()
-
 # ===================== کلاس کانفیگ =====================
 @dataclass
 class ConfigParams:
@@ -69,6 +37,14 @@ class ConfigParams:
     extra_params: Dict[str, Any] = field(default_factory=dict)
 
 # ===================== توابع =====================
+def clear_files():
+    """خالی کردن فایل‌های نرمال و فینال"""
+    for path in [TEXT_PATH, FIN_PATH]:
+        try:
+            open(path, "w").close()
+        except Exception:
+            pass
+
 def remove_empty_strings(lst: List[str]) -> List[str]:
     return [str(item).strip() for item in lst if item and str(item).strip()]
 
@@ -77,7 +53,13 @@ def is_valid_config(line: str) -> bool:
     if not line or len(line) < 5:
         return False
     lower = line.lower()
-    if "pin=0" in lower or "pin=red" in lower or "pin=قرمز" in lower:
+    # حذف کانفیگ‌های خراب و پین بالا
+    bad_pins = ["pin=red", "pin=قرمز"]
+    if any(bad in lower for bad in bad_pins):
+        return False
+    # حذف پین‌های بالای 2000
+    match = re.search(r"pin=(\d+)", lower)
+    if match and int(match.group(1)) > 2000:
         return False
     return True
 
@@ -106,33 +88,31 @@ def fetch_link(url: str) -> List[str]:
         r = requests.get(url, timeout=15)
         if r.status_code == 200:
             return r.text.splitlines()
-        else:
-            return []
+        return []
     except Exception:
         return []
 
 def clear_and_merge_configs(lines: List[str]) -> List[str]:
+    """حذف خطوط تکراری و خراب"""
     final_lines = []
     unique_keys = {}
     for line in lines:
         if not is_valid_config(line):
             continue
         cfg = parse_config_line(line)
-        if cfg:
-            key = f"{cfg.protocol}|{cfg.address}|{cfg.port}|{cfg.id}"
-        else:
-            key = line
+        key = f"{cfg.protocol}|{cfg.address}|{cfg.port}|{cfg.id}" if cfg else line
         if key not in unique_keys:
             unique_keys[key] = line
-    for val in unique_keys.values():
-        final_lines.append(val)
-    return final_lines
+    return list(unique_keys.values())
 
-def update_subs():
+def update_subs_manual():
+    """آپدیت دستی مرحله‌ای: normal -> final"""
+    clear_files()
     all_lines: List[str] = []
     threads: List[threading.Thread] = []
     results: List[List[str]] = [None] * len(LINK_PATH)
 
+    # خواندن منابع در threads
     def worker(i: int, url: str):
         results[i] = fetch_link(url)
 
@@ -148,34 +128,24 @@ def update_subs():
         if r:
             all_lines.extend(r)
 
-    total_before = len(all_lines)
+    # مرحله اول: normal.txt
     all_lines = remove_empty_strings(all_lines)
-    all_lines = clear_and_merge_configs(all_lines)
-    all_lines = list(dict.fromkeys(all_lines))
-    total_after = len(all_lines)
+    normal_lines = clear_and_merge_configs(all_lines)
+    normal_lines.insert(0, FILE_HEADER_TEXT)
+    with open(TEXT_PATH, "w") as f:
+        f.write("\n".join(normal_lines))
 
-    removed_count = total_before - total_after
-    all_lines.insert(0, FILE_HEADER_TEXT)
+    # مرحله دوم: final.txt
+    with open(TEXT_PATH, "r") as f:
+        normal_lines = f.read().splitlines()
+    final_lines = clear_and_merge_configs(normal_lines)
+    final_lines.insert(0, FILE_HEADER_TEXT)
+    with open(FIN_PATH, "w") as f:
+        f.write("\n".join(final_lines))
 
-    try:
-        with open(FIN_PATH, "w") as f:
-            f.write("\n".join(all_lines))
-        print(f"[+] Updated {FIN_PATH} with {len(all_lines)} lines, removed {removed_count}")
-    except Exception as e:
-        print(f"[!] Error writing {FIN_PATH}: {e}")
+    print(f"[+] Normal: {len(normal_lines)-1}, Final: {len(final_lines)-1}")
 
-    try:
-        with open(TEXT_PATH, "w") as f:
-            f.write("\n".join(all_lines))
-        print(f"[+] Updated {TEXT_PATH} with {len(all_lines)} lines")
-    except Exception as e:
-        print(f"[!] Error writing {TEXT_PATH}: {e}")
-
-# ===================== حلقه اصلی =====================
+# ===================== اجرای دستی =====================
 if __name__ == "__main__":
-    print("[*] Starting full-feature subscription updater...")
-    while True:
-        print("[*] Updating subscriptions...")
-        update_subs()
-        print(f"[*] Next update in {UPDATE_INTERVAL // 60} minutes...\n")
-        time.sleep(UPDATE_INTERVAL)
+    print("[*] Manual subscription updater ready.")
+    update_subs_manual()
