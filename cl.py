@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os, sys, json, threading, time, requests, base64, urllib.parse, psutil, signal, re
+import os, sys, threading, time, requests, urllib.parse, re
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ===================== SETTINGS =====================
 TH_MAX_WORKER = 10
-CONF_PATH = "config.json"
 TEXT_PATH = "normal.txt"
 FIN_PATH = "final.txt"
+BATCH_SIZE = 10
+TEST_URL = "http://www.gstatic.com/generate_204"
 
 LINK_PATH = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/ss.txt",
@@ -23,38 +25,6 @@ LINK_PATH = [
 ]
 
 FILE_HEADER_TEXT = "//profile-title: base64:2YfZhduM2LTZhyDZgdi52KfZhCDwn5iO8J+YjvCfmI4gaGFtZWRwNzE="
-
-# ===================== PROCESS MANAGER =====================
-class ProcessManager:
-    def __init__(self):
-        self.active_processes = {}
-        self.lock = threading.Lock()
-
-    def add_process(self, name: str, pid: int):
-        with self.lock:
-            self.active_processes[name] = pid
-
-    def stop_process(self, name: str):
-        pid_to_stop = None
-        with self.lock:
-            if name in self.active_processes:
-                pid_to_stop = self.active_processes.pop(name)
-        if pid_to_stop and psutil.pid_exists(pid_to_stop):
-            try:
-                os.kill(pid_to_stop, signal.SIGTERM)
-                time.sleep(0.5)
-                if psutil.pid_exists(pid_to_stop):
-                    os.kill(pid_to_stop, signal.SIGKILL)
-            except Exception:
-                pass
-
-    def stop_all(self):
-        with self.lock:
-            names = list(self.active_processes.keys())
-        for name in names:
-            self.stop_process(name)
-
-process_manager = ProcessManager()
 
 # ===================== CONFIG CLASS =====================
 @dataclass
@@ -104,8 +74,7 @@ def fetch_link(url: str) -> List[str]:
         r = requests.get(url, timeout=15)
         if r.status_code == 200:
             return r.text.splitlines()
-        else:
-            return []
+        return []
     except Exception:
         return []
 
@@ -126,27 +95,44 @@ def clear_and_merge_configs(lines: List[str]) -> List[str]:
         final_lines.append(val)
     return final_lines
 
-def ping_config(config_line: str) -> bool:
-    """
-    Simulate testing the config line for a valid ping (pin>0).
-    Returns True if the config is valid/pin positive.
-    """
-    # For demo purposes, consider is_valid_config is the pin test
-    return is_valid_config(config_line)
+# ===================== REAL PING FUNCTION =====================
+FIN_CONF: List[str] = []
 
+def process_ping(cfg_line: str, t: int) -> bool:
+    """
+    پینگ واقعی با proxy temp (127.0.0.X) و batch 10 تایی
+    """
+    try:
+        cfg = parse_config_line(cfg_line)
+        if not cfg or cfg.address == "unknown" or cfg.port == 0:
+            return False
+
+        proxies = {"http": f"http://127.0.0.{t+2}:{cfg.port}",
+                   "https": f"http://127.0.0.{t+2}:{cfg.port}"}
+
+        try:
+            start = time.time()
+            r = requests.get(TEST_URL, proxies=proxies, timeout=10)
+            elapsed = (time.time() - start) * 1000
+            if r.status_code == 204 or (r.status_code == 200 and len(r.content) == 0):
+                if 1 <= elapsed <= 3000:  # پینگ بین 1 تا 3000ms
+                    FIN_CONF.append(cfg_line)
+                    return True
+        except:
+            return False
+    except:
+        return False
+    return False
+
+# ===================== MAIN PROCESS =====================
 def process_sources() -> List[str]:
-    """
-    1. Read all sources from LINK_PATH
-    2. Test each config's pin
-    3. Return only valid configs
-    """
     all_configs: List[str] = []
     threads: List[threading.Thread] = []
     results: List[List[str]] = [None] * len(LINK_PATH)
 
     def worker(i: int, url: str):
         fetched = fetch_link(url)
-        valid_configs = [c for c in fetched if ping_config(c)]
+        valid_configs = [c for c in fetched if is_valid_config(c)]
         results[i] = valid_configs
 
     for i, url in enumerate(LINK_PATH):
@@ -160,47 +146,58 @@ def process_sources() -> List[str]:
             all_configs.extend(r)
     all_configs = remove_empty_strings(all_configs)
     all_configs = clear_and_merge_configs(all_configs)
+    print(f"[INFO] Total configs fetched from sources: {len(all_configs)}")
     return all_configs
 
-def save_configs(filepath: str, configs: List[str]):
+def save_configs(filepath: str, configs: List[str], label: str = ""):
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write("\n".join([FILE_HEADER_TEXT] + configs))
-        print(f"[+] Saved {len(configs)} configs to {filepath}")
+        print(f"[+] Saved {len(configs)} {label} configs to {filepath}")
     except Exception as e:
         print(f"[!] Error saving {filepath}: {e}")
 
-def filter_best_configs(input_path: str) -> List[str]:
-    """
-    Re-read normal configs and filter again for best pin
-    """
-    try:
-        with open(input_path, "r", encoding="utf-8") as f:
-            lines = f.read().splitlines()
-        filtered = [c for c in lines if ping_config(c)]
-        return remove_empty_strings(filtered)
-    except Exception:
-        return []
+def ping_all(configs: List[str], batch_size: int = 10) -> List[str]:
+    FIN_CONF.clear()
+    total = len(configs)
+    for i in range(0, total, batch_size):
+        batch = configs[i:i+batch_size]
+        threads = []
+        for t_idx, cfg_line in enumerate(batch):
+            t = threading.Thread(target=process_ping, args=(cfg_line, t_idx))
+            threads.append(t)
+            t.start()
+        for t in threads:
+            t.join()
+    return FIN_CONF.copy()
 
 # ===================== MAIN LOOP =====================
 if __name__ == "__main__":
-    print("[*] Starting subscription updater with manual execution...")
+    print("[*] Starting subscription updater with real ping and filtering...")
 
     while True:
-        print("[*] Step 1: Clearing output files...")
+        # پاک کردن خروجی‌های قبلی
         open(TEXT_PATH, "w").close()
         open(FIN_PATH, "w").close()
+        FIN_CONF.clear()
 
-        print("[*] Step 2: Reading sources and testing pin...")
+        print("[*] Step 1: Reading sources...")
         normal_configs = process_sources()
-        save_configs(TEXT_PATH, normal_configs)
 
-        print("[*] Step 3: Re-testing configs from normal.txt for best pins...")
-        best_configs = filter_best_configs(TEXT_PATH)
-        save_configs(FIN_PATH, best_configs)
+        print("[*] Step 2: First-level ping test (basic filtering)...")
+        normal_configs = ping_all(normal_configs, batch_size=10)
+        print(f"[INFO] Valid (non-duplicate, healthy) configs after first test: {len(normal_configs)}")
+        save_configs(TEXT_PATH, normal_configs, label="normal")
 
-        choice = input("[*] Press Enter to run again or type 'exit' to quit: ").strip()
-        if choice.lower() == "exit":
-            process_manager.stop_all()
+        print("[*] Step 3: Second-level ping test (best configs)...")
+        best_configs = ping_all(normal_configs, batch_size=10)
+        print(f"[INFO] Best configs after precise ping test: {len(best_configs)}")
+        save_configs(FIN_PATH, best_configs, label="final")
+
+        print("\n[*] Menu:")
+        print("1) Run again")
+        print("2) Exit")
+        choice = input("Select an option: ").strip()
+        if choice == "2":
             print("[*] Exiting...")
             sys.exit()
