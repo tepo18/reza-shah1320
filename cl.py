@@ -10,7 +10,7 @@ TH_MAX_WORKER = 10
 CONF_PATH = "config.json"
 TEXT_PATH = "normal.txt"
 FIN_PATH = "final.txt"
-UPDATE_INTERVAL = 20000 # ثانیه، آپدیت هر 1 ساعت
+UPDATE_INTERVAL = 12000 # ثانیه، آپدیت هر 1 ساعت
 
 LINK_PATH = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/ss.txt",
