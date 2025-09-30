@@ -22,8 +22,7 @@ LINKS_RAW = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo30.json",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo40.json",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo50.json",
-
-           ]
+]
 
 MAX_THREADS = 20
 MAX_PING_MS = 1200
@@ -103,10 +102,12 @@ def process_ping(configs):
         threads.append(t)
         t.start()
         if len(threads) >= MAX_THREADS:
-            for th in threads: th.join()
+            for th in threads: 
+                th.join()
             threads = []
 
-    for t in threads: t.join()
+    for t in threads: 
+        t.join()
     results.sort(key=lambda x: x[1])
     return [cfg for cfg, p in results]
 
