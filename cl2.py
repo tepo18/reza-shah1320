@@ -12,26 +12,16 @@ import threading
 import re
 
 # ---------------- مسیر فایل‌ها ----------------
-TEXT_NORMAL = "normal.txt"
-TEXT_FINAL = "final.txt"
+TEXT_NORMAL = "normal2.json"
+TEXT_FINAL = "final2.json"
 
 # ---------------- منابع ----------------
 LINKS_RAW = [
-
-
-    "https://github.com/Aristaproject/AristaSub/raw/refs/heads/main/Arista1.txt",
-    "https://github.com/Aristaproject/AristaSub/raw/refs/heads/main/Arista2.txt",
-    "https://github.com/Aristaproject/AristaSub/raw/refs/heads/main/Arista3.txt",
-    "https://github.com/Aristaproject/AristaSub/raw/refs/heads/main/Arista4.txt",
-
-    "https://github.com/Aristaproject/AristaSub/raw/refs/heads/main/Arista6.txt",
-    "https://github.com/Aristaproject/AristaSub/raw/refs/heads/main/Arista8.txt",
-    "https://github.com/Aristaproject/AristaSub/raw/refs/heads/main/Arista9.txt",
-    "https://raw.githubusercontent.com/tepo18/sab-vip10/main/tepo10.txt",
-    "https://raw.githubusercontent.com/tepo18/sab-vip10/main/tepo20.txt",
-    "https://raw.githubusercontent.com/tepo18/sab-vip10/main/tepo30.txt",
-    "https://raw.githubusercontent.com/tepo18/sab-vip10/main/tepo40.txt",
-    "https://raw.githubusercontent.com/tepo18/sab-vip10/main/tepo50.txt",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo10.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo20.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo30.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo40.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo50.json",
 
            ]
 
@@ -146,10 +136,10 @@ def update_all():
     print("[✅] Update complete.")
 
 if __name__ == "__main__":
-    print("[*] Starting advanced auto-updater with stable ping checks every 6 hours...")
+    print("[*] Starting advanced auto-updater with stable ping checks every 8 hours...")
     while True:
         start = time.time()
         update_all()
         elapsed = time.time() - start
-        print(f"[*] Elapsed time: {elapsed:.2f}s. Next update in 6 hours.\n")
+        print(f"[*] Elapsed time: {elapsed:.2f}s. Next update in 8 hours.\n")
         time.sleep(6 * 3600)
