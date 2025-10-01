@@ -19,6 +19,10 @@ LINKS_RAW = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo30.json",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo40.json",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo50.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo60.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo70.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo80.json",
+    "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo90.json",
 ]
 
 MAX_THREADS = 20
