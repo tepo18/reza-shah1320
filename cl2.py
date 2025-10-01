@@ -2,20 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
 import json
-import base64
-import urllib.request
-import subprocess
-import platform
 import threading
-import re
+import time
+import socket
+import urllib.request
+from typing import List, Dict
 
-# ---------------- مسیر فایل‌ها ----------------
-TEXT_NORMAL = "normal2.json"
-TEXT_FINAL = "final2.json"
+# ===================== تنظیمات =====================
+NORMAL_JSON = "normal2.json"
+FINAL_JSON = "final2.json"
 
-# ---------------- منابع ----------------
 LINKS_RAW = [
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo10.json",
     "https://raw.githubusercontent.com/tepo18/reza-shah1320/main/tepo20.json",
@@ -25,122 +22,98 @@ LINKS_RAW = [
 ]
 
 MAX_THREADS = 20
-MAX_PING_MS = 1200
+TCP_TIMEOUT = 3.0
 
-def fetch_lines(url):
+# ===================== توابع =====================
+def fetch_json(url: str) -> List[Dict]:
     try:
         with urllib.request.urlopen(url, timeout=15) as resp:
-            lines = resp.read().decode(errors="ignore").splitlines()
-            return [line.strip() for line in lines if line.strip()]
+            data = json.loads(resp.read().decode())
+        return data if isinstance(data, list) else []
     except Exception as e:
-        print(f"[ERROR] Cannot fetch {url}: {e}")
+        print(f"[⚠️] Cannot fetch {url}: {e}")
         return []
 
-def unique_lines(lines):
-    seen = set()
-    result = []
-    for line in lines:
-        if line not in seen:
-            result.append(line)
-            seen.add(line)
-    return result
+def validate_config(cfg: Dict) -> bool:
+    return bool(cfg and "remarks" in cfg and "outbounds" in cfg)
 
-def ping(host, count=1, timeout=1):
-    param_count = "-n" if platform.system().lower() == "windows" else "-c"
-    param_timeout = "-w" if platform.system().lower() == "windows" else "-W"
+def tcp_test(address: str, port: int, timeout=TCP_TIMEOUT) -> bool:
     try:
-        cmd = ["ping", param_count, str(count), param_timeout, str(timeout), host]
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        output = result.stdout
-        match = re.search(r'time[=<]\s*(\d+\.?\d*)', output)
-        if match:
-            return float(match.group(1))
+        with socket.create_connection((address, port), timeout=timeout):
+            return True
     except:
-        pass
-    return float('inf')
+        return False
 
-def extract_address(config_line):
-    try:
-        if config_line.startswith("vmess://"):
-            encoded = config_line.split("://", 1)[1].split("#")[0]
-            missing_padding = len(encoded) % 4
-            if missing_padding:
-                encoded += "=" * (4 - missing_padding)
-            data = json.loads(base64.b64decode(encoded).decode('utf-8'))
-            host = data.get("add") or data.get("address")
-            port = int(data.get("port", 443))
-            return host, port
-        elif config_line.startswith("vless://") or config_line.startswith("trojan://"):
-            match = re.match(r'^[^:]+://[^@]+@([^:]+):(\d+)', config_line)
-            if match:
-                host, port = match.group(1), int(match.group(2))
-                return host, port
-        elif config_line.startswith("hy2://") or config_line.startswith("hysteria2://"):
-            match = re.match(r'^[^:]+://([^:]+):(\d+)', config_line)
-            if match:
-                host, port = match.group(1), int(match.group(2))
-                return host, port
-    except:
-        pass
-    return None, None
-
-def process_ping(configs):
+def process_configs(configs: List[Dict], precise_test=False) -> List[Dict]:
     results = []
     lock = threading.Lock()
     threads = []
 
-    def worker(cfg_line):
-        host, port = extract_address(cfg_line)
-        if host:
-            ping_time = ping(host)
-            if ping_time < MAX_PING_MS:
-                with lock:
-                    results.append((cfg_line, ping_time))
+    def worker(cfg):
+        if "outbounds" in cfg:
+            try:
+                vnext = cfg["outbounds"][0]["settings"]["vnext"][0]
+                host = vnext.get("address")
+                port = vnext.get("port", 443)
+                if precise_test and host:
+                    if tcp_test(host, port):
+                        with lock:
+                            results.append(cfg)
+                else:
+                    with lock:
+                        results.append(cfg)
+            except:
+                pass
 
-    for line in configs:
-        t = threading.Thread(target=worker, args=(line,))
+    for cfg in configs:
+        t = threading.Thread(target=worker, args=(cfg,))
         threads.append(t)
         t.start()
         if len(threads) >= MAX_THREADS:
-            for th in threads: 
+            for th in threads:
                 th.join()
             threads = []
 
-    for t in threads: 
+    for t in threads:
         t.join()
-    results.sort(key=lambda x: x[1])
-    return [cfg for cfg, p in results]
 
-def save_files(normal_lines, final_lines):
-    with open(TEXT_NORMAL, "w", encoding="utf-8") as f:
-        f.write("\n".join(normal_lines))
-    with open(TEXT_FINAL, "w", encoding="utf-8") as f:
-        f.write("\n".join(final_lines))
+    # حذف تکراری با استفاده از remarks
+    unique = {}
+    for cfg in results:
+        key = cfg.get("remarks")
+        if key not in unique:
+            unique[key] = cfg
 
-def update_all():
-    print("[*] Fetching sources...")
-    all_lines = []
-    for link in LINKS_RAW:
-        all_lines.extend(fetch_lines(link))
-    print(f"[*] Total lines fetched: {len(all_lines)}")
+    return list(unique.values())
 
-    all_lines = unique_lines(all_lines)
-    print("[*] Stage 1: First ping check (basic filtering)...")
-    normal_lines = process_ping(all_lines)
-    print(f"[INFO] Saved {len(normal_lines)} configs to {TEXT_NORMAL}")
+def save_json_files(normal_list: List[Dict], final_list: List[Dict]):
+    os.makedirs(os.path.dirname(os.path.abspath(NORMAL_JSON)), exist_ok=True)
 
-    print("[*] Stage 2: Detailed ping stability check...")
-    final_lines = process_ping(normal_lines)
-    print(f"[INFO] Saved {len(final_lines)} configs to {TEXT_FINAL}")
+    with open(NORMAL_JSON, "w", encoding="utf-8") as f:
+        json.dump(normal_list, f, ensure_ascii=False, indent=4)
+    with open(FINAL_JSON, "w", encoding="utf-8") as f:
+        json.dump(final_list, f, ensure_ascii=False, indent=4)
 
-    save_files(normal_lines, final_lines)
-    print("[✅] Update complete.")
+    print(f"[ℹ️] Normal configs: {len(normal_list)} saved to {NORMAL_JSON}")
+    print(f"[ℹ️] Final configs (after TCP test): {len(final_list)} saved to {FINAL_JSON}")
+    print(f"[✅] Update complete. Normal2.json and Final2.json are ready.")
 
+def update_subs():
+    all_configs = []
+    for url in LINKS_RAW:
+        data = fetch_json(url)
+        for cfg in data:
+            if validate_config(cfg):
+                all_configs.append(cfg)
+
+    print(f"[*] Total configs fetched from sources: {len(all_configs)}")
+    normal_list = all_configs
+    final_list = process_configs(normal_list, precise_test=True)
+    save_json_files(normal_list, final_list)
+
+# ========================== اجرا ==========================
 if __name__ == "__main__":
-    print("[*] Starting advanced auto-updater with stable ping checks every 8 hours...")
-    while True:
-        start = time.time()
-        update_all()
-        elapsed = time.time() - start
-        print(f"[*] Elapsed time: {elapsed:.2f}s. Next update in 8 hours.\n")
-        time.sleep(6 * 3600)
+    print("[*] Starting JSON subscription update...")
+    start_time = time.time()
+    update_subs()
+    print(f"[*] Done. Time elapsed: {time.time() - start_time:.2f}s")
