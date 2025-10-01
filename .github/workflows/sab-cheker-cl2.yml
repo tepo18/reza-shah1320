@@ -36,5 +36,5 @@ jobs:
             git commit -m "auto update from cl2.py [skip ci]" || echo "No changes"
             git push || echo "skip push"
           else
-            echo "⚠️ normal4.json یا final4.json خالی یا موجود نیست، commit نشد"
+            echo "⚠️ normal2.json یا final2.json خالی یا موجود نیست، commit نشد"
           fi
